@@ -1,5 +1,7 @@
 <?php
 header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
+header("Access-Control-Allow-Headers: Content-Type");
 
 $superheroes = [
   [
@@ -64,10 +66,28 @@ $superheroes = [
   ], 
 ];
 
-?>
+$query = isset($_GET['query']) ? trim($_GET['query']) : '';
+echo "<h2>RESULT</h2>"; // Add "Result" header
+if ($query === '') {
+    // Return the full list of aliases
+    echo "<ul>";
+    foreach ($superheroes as $superhero) {
+        echo "<li>{$superhero['alias']}</li>";
+    }
+    echo "</ul>";
+} else {
+    // Search for the superhero
+    $result = array_filter($superheroes, function ($superhero) use ($query) {
+        return stripos($superhero['name'], $query) !== false || stripos($superhero['alias'], $query) !== false;
+    });
 
-<ul>
-<?php foreach ($superheroes as $superhero): ?>
-  <li><?= $superhero['alias']; ?></li>
-<?php endforeach; ?>
-</ul>
+    if (!empty($result)) {
+        $superhero = array_values($result)[0];
+        echo "<h3>" . strtoupper($superhero['alias']) . "</h3>"; // Alias in uppercase
+        echo "<h4>A.K.A " . strtoupper($superhero['name']) . "</h4>"; // Name in uppercase
+        echo "<p>{$superhero['biography']}</p>"; // Biography remains as-is
+    } else {
+        echo "<p style='color: red;'>SUPERHERO NOT FOUND</p>";
+    }
+}
+?>

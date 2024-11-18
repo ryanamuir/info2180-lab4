@@ -1,29 +1,30 @@
-document.addEventListener("DOMContentLoaded", function () {
-    console.log("DOM fully loaded and parsed!");
-
-    // Get the search button by its ID
-    const button = document.getElementById("searchButton");
-
-    // Add an event listener to handle clicks
-    button.addEventListener("click", function () {
-        console.log("Search button clicked!");
-
-        // Perform a fetch request to get the superheroes data
-        fetch('http://localhost/info2180-lab4/superheroes.php')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.text();
-            })
-            .then(data => {
-                console.log("Data fetched successfully:", data);
-                // Show the data in an alert
-                alert(`${data}`);
-            })
-            .catch(error => {
-                console.error("Error fetching data:", error);
-                alert("Failed to fetch superhero data.");
-            });
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("searchForm");
+    const queryInput = document.getElementById("query");
+    const resultDiv = document.getElementById("result");
+  
+    form.addEventListener("submit", (event) => {
+      event.preventDefault(); // Prevent form submission
+  
+      const query = queryInput.value.trim(); // Get the input value
+      resultDiv.innerHTML = ""; // Clear previous results
+  
+      // Fetch data from the PHP file
+      fetch(`http://localhost/info2180-lab4/superheroes.php?query=${encodeURIComponent(query)}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.text();
+        })
+        .then((data) => {
+          // Display the response in the result div
+          resultDiv.innerHTML = data;
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+          resultDiv.innerHTML = "<p style='color: red;'>Failed to fetch superhero data.</p>";
+        });
     });
-});
+  });
+  
